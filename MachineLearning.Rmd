@@ -5,8 +5,10 @@ date: "7 September 2016"
 output: html_document
 ---
 
-```{r}
+```{r results='hide', warning=FALSE, message=FALSE}
 library(dplyr)
+library(caret)
+rm(list = ls())
 ```
 
 First load the data ...
@@ -34,6 +36,8 @@ Remove summary statistics
 ```{r}
 training <- training[ training$new_window == 'no', ]
 ```
+
+Remove unwanted fields from training
 
 ```{r}
 training <- subset(training, select = -c(X))
@@ -72,9 +76,7 @@ testing <- subset(testing, select = -c(var_accel_forearm, avg_roll_forearm, stdd
 
 Partition the data into training and validation sets
 
-```{r}
-library(caret)
-
+```{r  warning=FALSE, message=FALSE}
 trainIndex <- createDataPartition(training$classe, p = .75, list = FALSE)
 
 validation <- training[ -trainIndex, ]
@@ -83,20 +85,20 @@ training <- training[ trainIndex, ]
 
 Train the model
 
-```{r results="hide"}
+```{r results="hide", warning=FALSE, message=FALSE}
 mod <- train(classe ~ ., data=training, method="gbm")
 ```
 
 Verify the model using the validation data setup
 
-```{r}
+```{r warning=FALSE, message=FALSE}
 pred <- predict(mod, validation)
 confusionMatrix(pred, validation$classe)
 ```
 
 Predict the test classes using the model
 
-```{r}
+```{r warning=FALSE, message=FALSE}
 pred_test <- predict(mod, testing)
 pred_test
 ```
